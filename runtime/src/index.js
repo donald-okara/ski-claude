@@ -88,15 +88,26 @@ function wireInput(stage, store, deck) {
   });
 }
 
+// Where a hash points: a slide index, or null when the hash is not about slides.
+// #slide-N and #<slide id> go to that slide; a malformed #slide-... goes to the first.
+export function slideFromHash(hash, deck) {
+  const { view, slide } = parseHash(hash);
+  if (view !== 'deck') return null;
+  if (slide !== null) return slide;
+  const byId = deck.slides.findIndex((s) => hash === `#${s.id}`);
+  if (byId !== -1) return byId;
+  return hash.startsWith('#slide-') ? 0 : null;
+}
+
 function wireHash(store, deck) {
   const counts = stepCountsOf(deck);
   store.subscribe((state, prev) => {
     if (state.slide !== prev.slide) location.hash = formatHash(state.slide);
   });
   window.addEventListener('hashchange', () => {
-    const { view, slide } = parseHash(location.hash);
-    if (view !== 'deck') return;
-    const pos = goTo(slide ?? 0, counts);
+    const slide = slideFromHash(location.hash, deck);
+    if (slide === null) return;
+    const pos = goTo(slide, counts);
     if (pos && pos.slide !== store.get().slide) store.set({ ...pos, jump: true });
   });
 }
@@ -113,7 +124,7 @@ export function boot(doc) {
   const prefs = storage
     ? loadPrefs(storage, { theme: deck.theme, textScale: 1 })
     : { theme: deck.theme, textScale: 1 };
-  const initial = goTo(parseHash(location.hash).slide ?? 0, stepCountsOf(deck));
+  const initial = goTo(slideFromHash(location.hash, deck) ?? 0, stepCountsOf(deck));
   const store = createStore({ ...initial, theme: prefs.theme, textScale: prefs.textScale, overlay: null, jump: true });
 
   applyTheme(doc.documentElement, store.get().theme, store.get().textScale);

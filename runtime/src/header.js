@@ -15,12 +15,20 @@ export function createHeader(deck, store) {
   // Fullscreen may only be requested from a user gesture, and the browser may refuse.
   fullscreen.addEventListener('click', async () => {
     try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else await document.documentElement.requestFullscreen();
+      const change = document.fullscreenElement
+        ? document.exitFullscreen()
+        : document.documentElement.requestFullscreen();
+      // Give focus back at once so a later Space advances the deck instead of re-toggling;
+      // the request is already made, and the browser may take a while to settle it.
+      fullscreen.blur();
+      await change;
     } catch {
       // Refused or unsupported; the deck carries on windowed.
+      fullscreen.blur();
     }
   });
+  // Without fullscreen support (for example an iframe that disallows it) the button would do nothing.
+  fullscreen.hidden = !document.fullscreenEnabled;
   bar.append(label, position, fullscreen);
   document.body.appendChild(bar);
 

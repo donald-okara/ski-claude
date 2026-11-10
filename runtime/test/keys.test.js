@@ -33,3 +33,12 @@ test('typing never navigates, but Escape still dismisses', () => {
 test('a target without closest is treated as the page', () => {
   assert.equal(resolveKey(key('ArrowRight', { target: {} })), 'next');
 });
+
+test('an event without a string key resolves to null', () => {
+  for (const k of [undefined, null, 12, {}]) assert.equal(resolveKey(key(k)), null);
+});
+test('Space and Enter belong to links, buttons, summaries and role=button', () => {
+  const inside = { tagName: 'A', isContentEditable: false, closest: (sel) => (sel.includes('button') ? {} : null) };
+  for (const k of [' ', 'Enter']) assert.equal(resolveKey(key(k, { target: inside })), null);
+  assert.equal(resolveKey(key('ArrowRight', { target: inside })), 'next');
+});

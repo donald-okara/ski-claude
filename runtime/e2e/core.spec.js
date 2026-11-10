@@ -81,3 +81,47 @@ test('without the runtime the deck is a readable document', async ({ page }) => 
   await page.goto('/examples/basic/');
   for (const id of ['cover', 'steps', 'fade', 'vertical', 'none']) await expect(page.locator('#' + id)).toBeVisible();
 });
+
+test('a slide-id link opens that slide', async ({ page }) => {
+  await page.goto('/examples/basic/#slide-3');
+  await page.locator('#fade a[href="#cover"]').click();
+  await expect(page.locator('section.ski-active')).toHaveId('cover');
+  await page.locator('#cover a[href="#slide-3"]').click();
+  await expect(page.locator('section.ski-active')).toHaveId('fade');
+  await page.evaluate(() => {
+    const a = document.createElement('a');
+    a.href = '#vertical';
+    a.textContent = 'To vertical';
+    document.querySelector('#fade').appendChild(a);
+  });
+  await page.locator('#fade a[href="#vertical"]').click();
+  await expect(page.locator('section.ski-active')).toHaveId('vertical');
+});
+
+test('an unknown anchor leaves the slide unchanged', async ({ page }) => {
+  await page.goto('/examples/basic/#slide-3');
+  await page.evaluate(() => { location.hash = '#nowhere'; });
+  await expect(page).toHaveURL(/#nowhere$/);
+  await expect(page.locator('section.ski-active')).toHaveId('fade');
+});
+
+test('Enter on a focused slide link follows the link instead of advancing', async ({ page }) => {
+  await page.goto('/examples/basic/');
+  await page.locator('#cover a[href="#slide-3"]').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('section.ski-active')).toHaveId('fade');
+});
+
+test('the fullscreen button gives up focus so Space still advances', async ({ page }) => {
+  await page.goto('/examples/basic/');
+  const enabled = await page.evaluate(() => document.fullscreenEnabled);
+  const button = page.locator('.ski-fullscreen');
+  if (!enabled) {
+    await expect(button).toBeHidden();
+    return;
+  }
+  await button.click();
+  expect(await page.evaluate(() => document.activeElement?.classList.contains('ski-fullscreen'))).toBe(false);
+  await page.keyboard.press(' ');
+  await expect(page.locator('.ski-header-position')).toHaveText('2 / 5');
+});

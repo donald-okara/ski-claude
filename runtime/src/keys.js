@@ -27,8 +27,19 @@ function isTyping(target) {
     || target.closest('ski-compose') != null;
 }
 
+// Space and Enter activate these natively, so the deck leaves them alone.
+const ACTIVATABLE = 'a[href], button, summary, [role="button"]';
+const ACTIVATION_KEYS = new Set([' ', 'Enter']);
+
+function isActivatable(target) {
+  return target != null && typeof target.closest === 'function' && target.closest(ACTIVATABLE) != null;
+}
+
 export function resolveKey(event) {
+  // Some browsers (autofill in Chrome) send keydown events with no key.
+  if (typeof event.key !== 'string') return null;
   if (event.ctrlKey || event.metaKey || event.altKey) return null;
+  if (ACTIVATION_KEYS.has(event.key) && isActivatable(event.target)) return null;
   const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
   const action = ACTION_BY_KEY.get(key) ?? null;
   if (action !== 'dismiss' && isTyping(event.target)) return null;
