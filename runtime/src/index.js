@@ -14,18 +14,21 @@ const CLICK_IGNORE = 'a, button, input, textarea, select, [data-draggable], ski-
 const stepCountsOf = (deck) => deck.slides.map((s) => s.stepEls.length);
 
 // The one place actions change state. Only navigation actions exist so far.
+// Each slide change also records `jump`: false for a step-by-step move, true
+// for go-to, Home, End and hash changes, so the stage knows which transition to play.
 export function dispatch(action, store, deck) {
   const counts = stepCountsOf(deck);
   const { slide, step } = store.get();
   let pos = null;
+  let jump = false;
   switch (action) {
     case 'next': pos = next({ slide, step }, counts); break;
     case 'previous': pos = previous({ slide, step }, counts); break;
-    case 'first': pos = goTo(0, counts); break;
-    case 'last': pos = goTo(counts.length - 1, counts); break;
+    case 'first': pos = goTo(0, counts); jump = true; break;
+    case 'last': pos = goTo(counts.length - 1, counts); jump = true; break;
     default: return;
   }
-  if (pos) store.set(pos);
+  if (pos) store.set({ ...pos, jump });
 }
 
 function readStorage() {
@@ -82,7 +85,7 @@ function wireHash(store, deck) {
     const { view, slide } = parseHash(location.hash);
     if (view !== 'deck') return;
     const pos = goTo(slide ?? 0, counts);
-    if (pos && pos.slide !== store.get().slide) store.set(pos);
+    if (pos && pos.slide !== store.get().slide) store.set({ ...pos, jump: true });
   });
 }
 
@@ -99,7 +102,7 @@ export function boot(doc) {
     ? loadPrefs(storage, { theme: deck.theme, textScale: 1 })
     : { theme: deck.theme, textScale: 1 };
   const initial = goTo(parseHash(location.hash).slide ?? 0, stepCountsOf(deck));
-  const store = createStore({ ...initial, theme: prefs.theme, textScale: prefs.textScale, overlay: null });
+  const store = createStore({ ...initial, theme: prefs.theme, textScale: prefs.textScale, overlay: null, jump: true });
 
   const stage = createStage(deck, store);
   const header = createHeader(deck, store);

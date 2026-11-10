@@ -62,3 +62,25 @@ html.ski-on .ski-empty {
   font-size: 24px;
   color: #eee;
 }
+
+/* Transitions. The destination is ski-active from the start; the leaving slide
+   stays displayed through ski-leaving. ski-run applies the end pose. */
+html.ski-on .ski-stage > section.ski-leaving,
+html.ski-on .ski-stage > section.ski-entering {
+  display: block;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+html.ski-on .ski-stage > section.ski-entering { z-index: 1; }
+
+html.ski-on .ski-stage > section.ski-entering.ski-t-horizontal { transform: translateX(100%); }
+html.ski-on .ski-stage > section.ski-entering.ski-t-horizontal.ski-back { transform: translateX(-100%); }
+html.ski-on .ski-stage > section.ski-entering.ski-t-vertical { transform: translateY(100%); }
+html.ski-on .ski-stage > section.ski-entering.ski-t-vertical.ski-back { transform: translateY(-100%); }
+html.ski-on .ski-stage > section.ski-entering.ski-t-fade { opacity: 0; }
+
+html.ski-on .ski-stage > section.ski-entering.ski-run { transform: none; opacity: 1; }
+html.ski-on .ski-stage > section.ski-leaving.ski-run.ski-t-horizontal { transform: translateX(-100%); }
+html.ski-on .ski-stage > section.ski-leaving.ski-run.ski-t-horizontal.ski-back { transform: translateX(100%); }
+html.ski-on .ski-stage > section.ski-leaving.ski-run.ski-t-vertical { transform: translateY(-100%); }
+html.ski-on .ski-stage > section.ski-leaving.ski-run.ski-t-vertical.ski-back { transform: translateY(100%); }
+html.ski-on .ski-stage > section.ski-leaving.ski-run.ski-t-fade { opacity: 0; }
