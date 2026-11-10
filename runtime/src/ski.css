@@ -2,16 +2,16 @@
    the deck is a plain readable document. */
 
 /* Theme tokens. A deck's own stylesheet may override any of them. */
-html.ski-on {
+:where(html.ski-on) {
   --ski-font-heading: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --ski-font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --ski-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --ski-text-scale: 1;
 }
-html.ski-on:where([data-ski-theme="light"]) {
+:where(html.ski-on[data-ski-theme="light"]) {
   --ski-bg: #FBFBF8; --ski-fg: #1A1A1A; --ski-muted: #6A7179; --ski-accent: #2F6FED;
 }
-html.ski-on:where([data-ski-theme="dark"]) {
+:where(html.ski-on[data-ski-theme="dark"]) {
   --ski-bg: #141413; --ski-fg: #F2F1EC; --ski-muted: #9A9A93; --ski-accent: #7AA7FF;
 }
 

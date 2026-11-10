@@ -96,3 +96,17 @@ test('deck boots with defaults when storage is blocked', async ({ page }) => {
   await page.keyboard.press('d');
   await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'dark');
 });
+
+test('a plain :root rule in the deck overrides theme and font tokens in both themes', async ({ page }) => {
+  await page.goto('/examples/tokens/');
+  const tokens = () => page.locator('html').evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { accent: cs.getPropertyValue('--ski-accent').trim(), font: cs.getPropertyValue('--ski-font-body').trim() };
+  });
+  expect(await tokens()).toEqual({ accent: 'rgb(255, 0, 0)', font: 'Georgia, serif' });
+  await page.keyboard.press('d');
+  await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'dark');
+  expect(await tokens()).toEqual({ accent: 'rgb(255, 0, 0)', font: 'Georgia, serif' });
+  // Tokens the deck did not override still come from the theme.
+  expect(await page.locator('html').evaluate((el) => getComputedStyle(el).getPropertyValue('--ski-bg').trim())).toBe('#141413');
+});
