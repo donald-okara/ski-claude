@@ -2,7 +2,7 @@
 import { next, previous, goTo } from './navigator.js';
 import { parseHash, formatHash } from './hash.js';
 import { createStore } from './store.js';
-import { loadPrefs, savePrefs, stepTextScale } from './prefs.js';
+import { stepTextScale } from './prefs.js';
 import { resolveKey } from './keys.js';
 import { parseDeck } from './deck.js';
 import { createStage } from './stage.js';
@@ -41,14 +41,6 @@ export function dispatch(action, store, deck) {
     default: return;
   }
   if (pos) store.set({ ...pos, jump });
-}
-
-function readStorage() {
-  try {
-    return window.localStorage;
-  } catch {
-    return null;
-  }
 }
 
 function showEmpty(doc) {
@@ -120,12 +112,8 @@ export function boot(doc) {
     return;
   }
 
-  const storage = readStorage();
-  const prefs = storage
-    ? loadPrefs(storage, { theme: deck.theme, textScale: 1 })
-    : { theme: deck.theme, textScale: 1 };
   const initial = goTo(slideFromHash(location.hash, deck) ?? 0, stepCountsOf(deck));
-  const store = createStore({ ...initial, theme: prefs.theme, textScale: prefs.textScale, overlay: null, jump: true });
+  const store = createStore({ ...initial, theme: deck.theme, textScale: 1, overlay: null, jump: true });
 
   applyTheme(doc.documentElement, store.get().theme, store.get().textScale);
   const stage = createStage(deck, store);
@@ -137,9 +125,6 @@ export function boot(doc) {
     overlays.render(state);
     if (state.theme !== prev.theme || state.textScale !== prev.textScale) {
       applyTheme(doc.documentElement, state.theme, state.textScale);
-      // Re-read storage per save: access itself can throw, and that must not break the deck.
-      const prefsStorage = readStorage();
-      if (prefsStorage) savePrefs(prefsStorage, state);
     }
   });
 

@@ -17,7 +17,7 @@ Not run in either environment. The check needs a browser signed in to claude.ai,
 | 3 | Clicking the stage advances; clicking the input on the cover does not. | not run | not run |
 | 4 | On the cover, the 'Jump to Fade' link opens the Fade slide. | not run | not run |
 | 5 | Resizing the panel or window rescales the stage with no clipping. | not run | not run |
-| 6 | The theme chosen with `D` survives a reload. | not run | not run |
+| 6 | The theme chosen with `D` resets to the default on reload (nothing is persisted). | not run | not run |
 | 7 | The fullscreen button enters and leaves fullscreen, or fails without an error. | not run | not run |
 | 8 | No network request leaves the artifact's own origin. | not run | not run |
 | 9 | The first click on the deck does not skip slide 1 (clicking to focus the frame also advances). | not run | not run |

@@ -11,13 +11,21 @@ const test = base.extend({
   },
 });
 
-test('D toggles the theme and it survives a reload', async ({ page }) => {
+test('D toggles the theme and a reload starts from the default again', async ({ page }) => {
   await page.goto('/examples/basic/');
   await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'light');
   await page.keyboard.press('d');
   await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'dark');
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'dark');
+  await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'light');
+});
+
+test('theme and text size are not written to storage', async ({ page }) => {
+  await page.goto('/examples/basic/');
+  await page.keyboard.press('d');
+  await page.keyboard.press('+');
+  const stored = await page.evaluate(() => window.localStorage.length + window.sessionStorage.length);
+  expect(stored).toBe(0);
 });
 
 test('text size steps, clamps and resets', async ({ page }) => {
@@ -85,16 +93,6 @@ test('only one overlay is open at a time', async ({ page }) => {
 test('header has a fullscreen button', async ({ page }) => {
   await page.goto('/examples/basic/');
   await expect(page.locator('.ski-header .ski-fullscreen')).toBeVisible();
-});
-
-test('deck boots with defaults when storage is blocked', async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(window, 'localStorage', { get() { throw new Error('denied'); } });
-  });
-  await page.goto('/examples/basic/');
-  await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'light');
-  await page.keyboard.press('d');
-  await expect(page.locator('html')).toHaveAttribute('data-ski-theme', 'dark');
 });
 
 test('a plain :root rule in the deck overrides theme and font tokens in both themes', async ({ page }) => {

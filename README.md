@@ -34,7 +34,9 @@ An optional JSON block sets deck-wide values:
 - `title`: deck title. Defaults to the page title.
 - `sessionMinutes`: positive number, default 30.
 - `transition`: default transition, one of `horizontal` (default), `vertical`, `fade`, `none`.
-- `theme`: `light` (default) or `dark`.
+- `theme`: `light` (default) or `dark`. This is the deck's starting theme.
+
+Theme and text size are never saved. Changing them with `D`, `+`, `-` or `0` lasts until the page is reloaded, and each deck starts from its own settings. The notes panel is always dark, whatever the slide theme.
 
 The block is optional: a deck without it works with the defaults and logs one console warning. Invalid JSON also logs a warning and falls back to the defaults.
 
