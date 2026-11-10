@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ski-claude basic deck</title>
+  <link rel="stylesheet" href="ski/ski.css">
+  <script type="application/json" id="ski-deck">
+    { "title": "ski-claude basic deck", "sessionMinutes": 10 }
+  </script>
+</head>
+<body>
+  <section id="cover" data-section="Intro">
+    <h1>ski-claude</h1>
+    <p>A slide deck that is also a plain HTML document.</p>
+    <input type="text" placeholder="Type here">
+    <aside>Speaker note for the cover.</aside>
+  </section>
+
+  <section id="steps" data-label="Steps">
+    <h2>Steps</h2>
+    <p data-step>First, this appears.</p>
+    <p data-step>Then this one.</p>
+    <aside>Speaker note for the steps slide.</aside>
+  </section>
+
+  <section id="fade" data-section="Transitions" data-label="Fade" data-transition="fade">
+    <h2>Fade</h2>
+    <p>This slide fades in.</p>
+    <aside>Speaker note for the fade slide.</aside>
+  </section>
+
+  <section id="vertical" data-label="Vertical" data-transition="vertical">
+    <h2>Vertical</h2>
+    <p>This slide slides in from below.</p>
+    <aside>Speaker note for the vertical slide.</aside>
+  </section>
+
+  <section id="none" data-label="None" data-transition="none">
+    <h2>None</h2>
+    <p>This slide cuts in instantly.</p>
+    <aside>Speaker note for the last slide.</aside>
+  </section>
+
+  <script src="ski/ski.js"></script>
+</body>
+</html>

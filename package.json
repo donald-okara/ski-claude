@@ -7,6 +7,12 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test runtime/test/*.test.js"
+    "test": "node --test runtime/test/*.test.js",
+    "build": "node runtime/build.mjs",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "esbuild": "^0.28.2"
   }
 }
