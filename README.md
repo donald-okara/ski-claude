@@ -79,7 +79,7 @@ Current state: 27 unit tests and 29 end-to-end tests pass. The bundle is `ski/sk
 
 ## Artifact check
 
-The deck has not yet been checked inside Claude's artifact sandbox. See [docs/artifact-check.md](docs/artifact-check.md). The Compose spike is only partly answered: see [docs/spike-compose.md](docs/spike-compose.md).
+The deck has not yet been checked inside Claude's artifact sandbox. See [docs/artifact-check.md](docs/artifact-check.md). Compose components will arrive as captures (images and clips rendered by a Gradle build on your machine), not as live Wasm. The optional live-island spike is deferred: see [docs/spike-compose.md](docs/spike-compose.md).
 
 ## Not yet built
 
@@ -88,4 +88,4 @@ The deck has not yet been checked inside Claude's artifact sandbox. See [docs/ar
 - Presenter view
 - Focusable spotlight, draggable box and whiteboard overlays (the shortcut guide and go-to overlays are built)
 - Code viewer
-- Compose demos
+- Compose captures (Gradle task that renders components to images and clips, device frames)
