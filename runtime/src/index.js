@@ -2,23 +2,28 @@
 import { next, previous, goTo } from './navigator.js';
 import { parseHash, formatHash } from './hash.js';
 import { createStore } from './store.js';
-import { loadPrefs } from './prefs.js';
+import { loadPrefs, savePrefs, stepTextScale } from './prefs.js';
 import { resolveKey } from './keys.js';
 import { parseDeck } from './deck.js';
 import { createStage } from './stage.js';
 import { createHeader } from './header.js';
+import { applyTheme } from './theme.js';
+import { createOverlays } from './overlays.js';
 
 const SWIPE_MIN_PX = 50;
 const CLICK_IGNORE = 'a, button, input, textarea, select, [data-draggable], ski-compose';
 
 const stepCountsOf = (deck) => deck.slides.map((s) => s.stepEls.length);
 
-// The one place actions change state. Only navigation actions exist so far.
+const NAV_ACTIONS = ['next', 'previous', 'first', 'last'];
+
+// The one place actions change state.
 // Each slide change also records `jump`: false for a step-by-step move, true
 // for go-to, Home, End and hash changes, so the stage knows which transition to play.
 export function dispatch(action, store, deck) {
   const counts = stepCountsOf(deck);
-  const { slide, step } = store.get();
+  const { slide, step, overlay, theme, textScale } = store.get();
+  if (overlay && NAV_ACTIONS.includes(action)) return;
   let pos = null;
   let jump = false;
   switch (action) {
@@ -26,6 +31,13 @@ export function dispatch(action, store, deck) {
     case 'previous': pos = previous({ slide, step }, counts); break;
     case 'first': pos = goTo(0, counts); jump = true; break;
     case 'last': pos = goTo(counts.length - 1, counts); jump = true; break;
+    case 'theme': store.set({ theme: theme === 'dark' ? 'light' : 'dark' }); return;
+    case 'textBigger': store.set({ textScale: stepTextScale(textScale, 1) }); return;
+    case 'textSmaller': store.set({ textScale: stepTextScale(textScale, -1) }); return;
+    case 'textReset': store.set({ textScale: stepTextScale(textScale, 0) }); return;
+    case 'shortcuts': store.set({ overlay: overlay === 'shortcuts' ? null : 'shortcuts' }); return;
+    case 'goto': store.set({ overlay: 'goto' }); return;
+    case 'dismiss': store.set({ overlay: null }); return;
     default: return;
   }
   if (pos) store.set({ ...pos, jump });
@@ -71,7 +83,7 @@ function wireInput(stage, store, deck) {
   document.addEventListener('keydown', (e) => {
     const action = resolveKey(e);
     if (!action) return;
-    if (['next', 'previous', 'first', 'last'].includes(action)) e.preventDefault();
+    if (NAV_ACTIONS.includes(action) || action === 'goto') e.preventDefault();
     dispatch(action, store, deck);
   });
 }
@@ -104,11 +116,20 @@ export function boot(doc) {
   const initial = goTo(parseHash(location.hash).slide ?? 0, stepCountsOf(deck));
   const store = createStore({ ...initial, theme: prefs.theme, textScale: prefs.textScale, overlay: null, jump: true });
 
+  applyTheme(doc.documentElement, store.get().theme, store.get().textScale);
   const stage = createStage(deck, store);
   const header = createHeader(deck, store);
+  const overlays = createOverlays(deck, store);
   store.subscribe((state, prev) => {
     stage.render(state, prev);
     header.render(state);
+    overlays.render(state);
+    if (state.theme !== prev.theme || state.textScale !== prev.textScale) {
+      applyTheme(doc.documentElement, state.theme, state.textScale);
+      // Re-read storage per save: access itself can throw, and that must not break the deck.
+      const prefsStorage = readStorage();
+      if (prefsStorage) savePrefs(prefsStorage, state);
+    }
   });
 
   wireInput(stage, store, deck);

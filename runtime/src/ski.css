@@ -1,13 +1,25 @@
 /* Everything here is scoped under html.ski-on so that, without the runtime,
    the deck is a plain readable document. */
 
+/* Theme tokens. A deck's own stylesheet may override any of them. */
+html.ski-on {
+  --ski-font-heading: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ski-font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ski-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ski-text-scale: 1;
+}
+html.ski-on:where([data-ski-theme="light"]) {
+  --ski-bg: #FBFBF8; --ski-fg: #1A1A1A; --ski-muted: #6A7179; --ski-accent: #2F6FED;
+}
+html.ski-on:where([data-ski-theme="dark"]) {
+  --ski-bg: #141413; --ski-fg: #F2F1EC; --ski-muted: #9A9A93; --ski-accent: #7AA7FF;
+}
+
 html.ski-on, html.ski-on body {
   margin: 0;
   height: 100%;
   overflow: hidden;
   background: #111;
-  color: #1c1c1c;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html.ski-on .ski-stage {
@@ -17,7 +29,9 @@ html.ski-on .ski-stage {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  background: #fff;
+  background: var(--ski-bg, #FBFBF8);
+  color: var(--ski-fg, #1A1A1A);
+  font-family: var(--ski-font-body);
   transform-origin: center center;
   transform: translate(-50%, -50%) scale(var(--ski-scale, 1));
 }
@@ -28,14 +42,18 @@ html.ski-on .ski-stage > section {
   inset: 0;
   box-sizing: border-box;
   padding: 140px 120px 80px;
-  font-size: 48px;
+  font-size: calc(48px * var(--ski-text-scale, 1));
   line-height: 1.4;
 }
 
 html.ski-on .ski-stage > section.ski-active { display: block; }
-html.ski-on .ski-stage h1 { font-size: 120px; margin: 0 0 32px; }
-html.ski-on .ski-stage h2 { font-size: 80px; margin: 0 0 32px; }
-html.ski-on .ski-stage input { font-size: 40px; padding: 8px 16px; }
+html.ski-on .ski-stage h1,
+html.ski-on .ski-stage h2 { font-family: var(--ski-font-heading); }
+html.ski-on .ski-stage h1 { font-size: calc(120px * var(--ski-text-scale, 1)); margin: 0 0 32px; }
+html.ski-on .ski-stage h2 { font-size: calc(80px * var(--ski-text-scale, 1)); margin: 0 0 32px; }
+html.ski-on .ski-stage input { font-size: calc(40px * var(--ski-text-scale, 1)); padding: 8px 16px; }
+html.ski-on .ski-stage a { color: var(--ski-accent); }
+html.ski-on .ski-stage code, html.ski-on .ski-stage pre { font-family: var(--ski-font-mono); }
 
 html.ski-on aside { display: none; }
 html.ski-on .ski-step-pending { visibility: hidden; }
@@ -53,6 +71,56 @@ html.ski-on .ski-header {
   font-size: 14px;
   color: #fff;
   background: rgba(0, 0, 0, 0.55);
+}
+html.ski-on .ski-header-position { margin-left: auto; }
+html.ski-on .ski-fullscreen {
+  margin-left: 16px;
+  padding: 0 8px;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  cursor: pointer;
+}
+html.ski-on .ski-fullscreen:hover { background: rgba(255, 255, 255, 0.15); }
+
+/* Overlays sit outside the scaled stage, in viewport pixels. */
+html.ski-on .ski-shortcuts,
+html.ski-on .ski-goto {
+  position: fixed;
+  z-index: 20;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  padding: 24px 32px;
+  color: var(--ski-fg, #1A1A1A);
+  background: var(--ski-bg, #FBFBF8);
+  border: 1px solid var(--ski-muted, #6A7179);
+  border-radius: 12px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  font: 16px/1.4 var(--ski-font-body);
+}
+html.ski-on .ski-shortcuts[hidden],
+html.ski-on .ski-goto[hidden] { display: none; }
+html.ski-on .ski-overlay-title { display: block; margin: 0 0 16px; font: 600 20px var(--ski-font-heading); }
+html.ski-on .ski-shortcut { display: flex; gap: 24px; padding: 4px 0; }
+html.ski-on .ski-shortcut-keys { flex: 0 0 220px; display: flex; flex-wrap: wrap; gap: 4px; }
+html.ski-on .ski-shortcut kbd {
+  padding: 0 6px;
+  font: 14px var(--ski-font-mono);
+  border: 1px solid var(--ski-muted, #6A7179);
+  border-radius: 4px;
+}
+html.ski-on .ski-goto input {
+  width: 8em;
+  padding: 6px 10px;
+  font: 20px var(--ski-font-body);
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--ski-muted, #6A7179);
+  border-radius: 6px;
 }
 
 html.ski-on .ski-empty {
