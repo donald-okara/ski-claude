@@ -2,7 +2,7 @@
 
 Sample deck: https://claude.ai/artifact/RXyhS9BzRFPMP1a2m65Bek ("ski-claude sample deck", files `index.html`, `ski/ski.js`, `ski/ski.css`). Private to the repo owner until shared.
 
-Runtime version 0.1.0. Bundle sizes: `ski/ski.js` 10,007 bytes, `ski/ski.css` 5,507 bytes.
+Runtime version 0.1.0. Bundle sizes: `ski/ski.js` 10,434 bytes, `ski/ski.css` 5,507 bytes.
 
 ## Status
 
@@ -15,11 +15,13 @@ Not run in either environment. The check needs a browser signed in to claude.ai,
 | 1 | The deck opens on slide 1 with the header showing "1 / 5". | not run | not run |
 | 2 | Every key in `BINDINGS` does its action. List any key that never reaches the page. | not run | not run |
 | 3 | Clicking the stage advances; clicking the input on the cover does not. | not run | not run |
-| 4 | The link ending `#slide-3` opens the Fade slide. | not run | not run |
+| 4 | On the cover, the 'Jump to Fade' link opens the Fade slide. | not run | not run |
 | 5 | Resizing the panel or window rescales the stage with no clipping. | not run | not run |
 | 6 | The theme chosen with `D` survives a reload. | not run | not run |
 | 7 | The fullscreen button enters and leaves fullscreen, or fails without an error. | not run | not run |
 | 8 | No network request leaves the artifact's own origin. | not run | not run |
+| 9 | The first click on the deck does not skip slide 1 (clicking to focus the frame also advances). | not run | not run |
+| 10 | Browser Back after several slides: note whether it steps through slides (each slide change adds a history entry). | not run | not run |
 
 ## Known limits
 

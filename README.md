@@ -19,7 +19,7 @@ A deck is an HTML file with one top-level `<section>` per slide, `ski/ski.css` i
 | `data-step` | On an element inside a slide. Steps are revealed one per forward key press. |
 | `<aside>` | Speaker note. Hidden while presenting. |
 
-A link ending in `#slide-3` or any slide `id` opens that slide.
+Links to `#slide-3` (slide number) and `#<slide id>` (for example `#vertical`) both open that slide; the runtime itself writes `#slide-N` as you move. A malformed `#slide-...` opens the first slide, and any other hash (an unknown anchor, `#presenter`) leaves the current slide alone.
 
 ### Deck settings
 
@@ -36,7 +36,7 @@ An optional JSON block sets deck-wide values:
 - `transition`: default transition, one of `horizontal` (default), `vertical`, `fade`, `none`.
 - `theme`: `light` (default) or `dark`.
 
-Invalid JSON logs a warning and falls back to the defaults.
+The block is optional: a deck without it works with the defaults and logs one console warning. Invalid JSON also logs a warning and falls back to the defaults.
 
 ## Keys
 
@@ -61,19 +61,19 @@ The runtime defines CSS custom properties on `html.ski-on` at zero specificity, 
 :root { --ski-accent: rgb(255, 0, 0); --ski-font-body: Georgia, serif; }
 ```
 
-Tokens: `--ski-font-heading`, `--ski-font-body`, `--ski-font-mono`, `--ski-text-scale`, and for each theme `--ski-bg`, `--ski-fg`, `--ski-muted`, `--ski-accent`. `examples/tokens/index.html` is a working example.
+Tokens: `--ski-font-heading`, `--ski-font-body`, `--ski-font-mono`, and for each theme `--ski-bg`, `--ski-fg`, `--ski-muted`, `--ski-accent`. `--ski-text-scale` is not overridable by a deck: the runtime sets it inline and it is controlled with `+`, `-` and `0`. `examples/tokens/index.html` is a working example.
 
 ## Commands
 
 ```
 npm test           # unit tests
 npm run e2e        # Playwright browser tests
-npm run build      # bundle to examples/basic/ski/ski.js and ski.css
+npm run build      # bundle to dist/ski/ and copy it into every examples/*/ski/
 ```
 
 `npm run e2e` needs a local Chromium. Install it once with `npx playwright install chromium`.
 
-Current state: 25 unit tests and 25 end-to-end tests pass. The bundle is `ski/ski.js` 10,007 bytes and `ski/ski.css` 5,507 bytes.
+Current state: 27 unit tests and 29 end-to-end tests pass. The bundle is `ski/ski.js` 10,434 bytes and `ski/ski.css` 5,507 bytes.
 
 ## Artifact check
 
@@ -84,6 +84,6 @@ The deck has not yet been checked inside Claude's artifact sandbox. See [docs/ar
 - Table of contents
 - Notes panel
 - Presenter view
-- Overlays
+- Focusable spotlight, draggable box and whiteboard overlays (the shortcut guide and go-to overlays are built)
 - Code viewer
 - Compose demos
